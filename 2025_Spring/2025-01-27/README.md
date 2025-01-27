@@ -11,9 +11,6 @@ title: "What is Computer Systems?"
 .preserve-text {
   text-transform: none;
 }
-.red {
-  color: red;
-}
 .code {
   background-color: black;
   color: darkgrey;
@@ -46,7 +43,7 @@ Nobody on the internet can seem to agree on the *exact* meaning of computer syst
 
 Doing computing [to make [more]{.fragment .show-up}[, better]{.fragment .show-up}[, faster]{.fragment .show-up}[, [`%s`]{.code}]{.fragment .show-up} computing possible]{.fragment .show-up}
 
-## A non-exhaustive list of sub-fields in systems
+## A non‑exhaustive list of sub‑fields in systems
 
 :::: {.kinda-small .incremental}
 - Kernels
@@ -75,10 +72,9 @@ Doing computing [to make [more]{.fragment .show-up}[, better]{.fragment .show-up
 I'm only one person—and a pretty busy one—who is only knowledgeable about *some* systems topics. I will do my best to bring in presenters to cover topics that are outside of my personal knowledge, but I'm certain at least [`%u`]{.code} of you know something interesting that I don't, so if you have an idea for a talk, *please* bring it to me.
 ::::
 
-# 
+#
 
-:::: {.red}
 ```
+$ ./a.out
 Bad system call (core dumped)
 ```
-::::
