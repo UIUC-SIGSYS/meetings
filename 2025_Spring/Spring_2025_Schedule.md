@@ -3,7 +3,7 @@
 | Date | Topic | Presenter | Notes |
 | --- | --- | --- | --- |
 | 2025-01-27 | What is Computer Systems? | Jenna | |
-| 2025-02-03 | Operating Systems Fundementals | | |
+| 2025-02-03 | Operating Systems Fundamentals | | |
 | 2025-02-10 | Eccentric Operating Systems | | |
 | 2025-02-17 | UNIX v. Windows Comparison | | |
 | 2025-02-24 | Networking Fundementals | | |
