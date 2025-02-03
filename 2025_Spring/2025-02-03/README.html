@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Operating Systems Fundamentals</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/black.css" id="theme">
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Operating Systems Fundamentals</h1>
+</section>
+
+<section>
+<section id="what-is-an-operating-system"
+class="title-slide slide level1">
+<h1>What is an operating system?</h1>
+<style>
+.kinda-small {
+  font-size: 80%;
+}
+.preserve-text {
+  text-transform: none;
+}
+</style>
+</section>
+<section id="section" class="slide level2">
+<h2></h2>
+<p>An operating system is a piece of software (or realistically a bundle
+of software) that acts as the controller of a physical computer’s
+compute resources.</p>
+</section>
+<section id="what-does-an-os-do" class="slide level2">
+<h2>What does an OS do?</h2>
+<p>The OS Dev wiki has a good list of “major OS tasks”:</p>
+<div>
+<ul>
+<li class="fragment">Managing memory and other system resources.</li>
+<li class="fragment">Imposing security and access policies.</li>
+<li class="fragment">Scheduling and multiplexing processes and
+threads.</li>
+<li class="fragment">Launching and closing user programs
+dynamically.</li>
+<li class="fragment">Providing a basic user interface and application
+programmer interface.</li>
+</ul>
+<p><span class="fragment">critically the interfaces exposed by an OS
+should be independent of the underlying hardware</span></p>
+</div>
+</section>
+<section id="the-kernel" class="slide level2">
+<h2>the kernel</h2>
+<div class="kinda-small">
+<ul>
+<li class="fragment">The kernel is the lowest level part of an operating
+system</li>
+<li class="fragment">It manages the creation and allocation of programs
+and shared system resources.</li>
+<li class="fragment">It interfaces with hardware via specialized drivers
+and presents a unified interface to programs.</li>
+<li class="fragment">It’s also the ultimate privileged context, since it
+controls when programs run and what they can and can’t do.</li>
+<li class="fragment">Individual programs that run underneath the kernel
+without this privilege are said to run in “userland.”</li>
+</ul>
+</div>
+</section></section>
+<section>
+<section id="memory" class="title-slide slide level1">
+<h1>Memory</h1>
+
+</section>
+<section id="strategies-for-memory-management" class="slide level2">
+<h2>Strategies for memory management</h2>
+<div>
+<ul>
+<li class="fragment">physical memory</li>
+<li class="fragment">virtual memory
+<ul>
+<li class="fragment">segmented memory</li>
+<li class="fragment">paged memory</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="physical-memory" class="slide level2">
+<h2>Physical Memory</h2>
+<div class="kinda-small">
+<ul>
+<li class="fragment">Physical memory is a very simple concept:</li>
+<li class="fragment">All the programs share the same address space which
+is mapped 1:1 with physical memory.</li>
+<li class="fragment">This memory scheme is very easy to understand and
+implement, but it comes with some drawbacks.</li>
+<li class="fragment">you can never allocate more memory than you have
+physically available (more on this later).</li>
+<li class="fragment">Buggy or malicious programs can read and write to
+memory used by other programs or the OS.</li>
+<li class="fragment">Still sometimes used in embedded contexts.</li>
+</ul>
+</div>
+</section>
+<section id="virtual-memory" class="slide level2">
+<h2>Virtual Memory</h2>
+<div class="kinda-small">
+<ul>
+<li class="fragment">Virtual memory adds an abstract, or
+<em>virtual</em>, address space between physical memory and
+programs.</li>
+<li class="fragment">This means that multiple programs can use the same
+memory addresses without them colliding,</li>
+<li class="fragment">And most importantly, it means that programs can’t
+see or modify each others’ memory.</li>
+</ul>
+</div>
+</section>
+<section id="segmented-memory" class="slide level2">
+<h2>Segmented Memory</h2>
+<div class="kinda-small">
+<ul>
+<li class="fragment">Segmented memory achieves virtual memory using a
+set of “program segments”</li>
+<li class="fragment">these segments are effectively separate address
+spaces</li>
+<li class="fragment">This makes pointers complicated and introduces the
+concept of “near” and “far” pointers, for pointers to memory in the same
+and different segments respectively</li>
+<li class="fragment">even when segmented memory was the norm, many
+systems would simply overlap all the segments to avoid a need to
+distinguish near and far pointers.</li>
+</ul>
+</div>
+</section>
+<section id="section-1" class="slide level2">
+<h2></h2>
+<figure>
+<img data-src="./segmented-memory.jpg" alt="Segmented Memory Diagram" />
+<figcaption aria-hidden="true">Segmented Memory Diagram</figcaption>
+</figure>
+</section>
+<section id="paged-memory" class="slide level2">
+<h2>Paged Memory</h2>
+<div class="kinda-small">
+<ul>
+<li class="fragment">Paged memory achieves virtual memory by mapping
+fixed size blocks of memory (called pages) between virtual and physical
+addresses</li>
+<li class="fragment">This system doesn’t require “near” and “far”
+pointers</li>
+<li class="fragment">Increased memory metadata overhead</li>
+<li class="fragment">Pages can exist without any real RAM backing them
+as long as they’re never accessed causing them to be loaded (or
+“faulted”)</li>
+<li class="fragment">Easily allows pages to be “swapped,” that is,
+written out to disk to recover RAM.</li>
+<li class="fragment">The strategy used by most modern, non-embedded
+operating systems.</li>
+</ul>
+</div>
+</section></section>
+<section>
+<section id="system-resources" class="title-slide slide level1">
+<h1>System resources</h1>
+
+</section>
+<section id="filesystems" class="slide level2">
+<h2>Filesystems</h2>
+<div class="kinda-small">
+<ul>
+<li class="fragment">Filesystems provide a way for programs to organize
+and store data</li>
+<li class="fragment">Most filesystems do this as a hierarchical tree
+composed of directories (branch nodes), and files (leaf nodes),</li>
+<li class="fragment">However some support other structures like symbolic
+links, which act as “references” to files elsewhere,</li>
+<li class="fragment">Or even “virtual” file types like sockets and pipes
+that act as interfaces for programs to communicate.</li>
+<li class="fragment">Some filesystems aren’t even backed by disks…</li>
+</ul>
+</div>
+</section>
+<section id="file-descriptors-and-sockets" class="slide level2">
+<h2>File descriptors and sockets</h2>
+<div class="kinda-small">
+<ul>
+<li class="fragment">Some resources are allocated internally by the
+kernel and accessed via symbolic resources.</li>
+<li class="fragment">For example when a program opens a file, that file
+is represented by a numeric value
+<ul>
+<li class="fragment">on UNIX this is called a file descriptor and is a
+small, positive <code>int</code></li>
+<li class="fragment">on Windows this is called a file handle and is a
+custom type <code>HANDLE</code> (which resolves to a
+<code>void*</code>)</li>
+</ul></li>
+<li class="fragment">file descriptors can also represent other resources
+like networking sockets and directories</li>
+</ul>
+</div>
+</section></section>
+<section>
+<section id="processes-and-scheduling" class="title-slide slide level1">
+<h1>Processes and scheduling</h1>
+
+</section>
+<section id="just-dont" class="slide level2">
+<h2>Just don’t!</h2>
+<div class="kinda-small">
+<ul>
+<li class="fragment">Single task operating systems like DOS and some
+embedded OSes don’t have processes and therefore don’t do
+scheduling.</li>
+<li class="fragment">This also entirely circumvents the major desire for
+virtual memory.</li>
+<li class="fragment">as you can imagine those two things save a lot of
+performance overhead.</li>
+<li class="fragment">however, most people want their desktop operating
+system to be “multitasking” to allow multiple user programs to run
+simultaneously, as well as daemons to handle networking and other
+systems tasks</li>
+</ul>
+</div>
+</section>
+<section id="or-maybe-we-should" class="slide level2">
+<h2>…or maybe we should</h2>
+<div class="kinda-small">
+<ul>
+<li class="fragment">as a result, basically all desktop operating
+systems since the DOS days are multitasking and schedule multiple
+process to allow many programs to run simultaneously</li>
+<li class="fragment">how this scheduling occurs and what guarantees can
+be made about how often and long a process will be scheduled categorize
+multitasking operating systems into categorizes like: <span
+class="fragment">asnyc</span><span class="fragment">,
+soft‑realtime</span><span class="fragment">, and
+hard‑realtime.</span></li>
+<li class="fragment">these terms refer to when and how different
+programs and the kernel may interrupt each other.</li>
+<li class="fragment">they have different pros and cons in reliability,
+performance, and convenience, and a fully nuanced discussion could fill
+most of another presentation</li>
+</ul>
+</div>
+</section></section>
+<section>
+<section id="running-programs" class="title-slide slide level1">
+<h1>Running programs</h1>
+
+</section>
+<section id="binary-loading" class="slide level2">
+<h2>Binary Loading</h2>
+<div class="kinda-small">
+<ul>
+<li class="fragment">A general purpose OS will typically implement some
+kind of binary loader.</li>
+<li class="fragment">This is the mechanism that converts an executable
+file into a running process.</li>
+<li class="fragment">Very broadly, this is done by:
+<ul>
+<li class="fragment">parsing the binary file format (ELF, PE, etc.)</li>
+<li class="fragment">allocating a PID, virtual address space, and other
+kernel state</li>
+<li class="fragment">loading the different regions of data (called
+segments) into memory at the specified locations</li>
+<li class="fragment">beginning execution at the specified start point
+(usually denoted by the symbol <code>_start</code>)</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="section-2" class="slide level2">
+<h2></h2>
+<figure>
+<img data-src="./elf-format.png" alt="ELF File Format" />
+<figcaption aria-hidden="true">ELF File Format</figcaption>
+</figure>
+</section>
+<section id="file-extensions" class="slide level2">
+<h2>File Extensions</h2>
+<div class="kinda-small">
+<ul>
+<li class="fragment">Most operating systems only nativity understand one
+or two file formats:
+<ul>
+<li class="fragment">Windows understands the PE executable format</li>
+<li class="fragment">Linux understands the ELF executable format and
+shebang (<code>#!</code>) scripts</li>
+<li class="fragment">MacOS understands the Mach-O executable format and
+shebang scripts</li>
+</ul></li>
+<li class="fragment">To make up for this limitation, we have file
+extensions;</li>
+<li class="fragment">these are used by higher level OS components like
+file managers to open certain files with certain programs,</li>
+<li class="fragment">this allows an OS to “understand” things like PDF
+documents, PNG images, etc.</li>
+</ul>
+</div>
+</section></section>
+<section>
+<section id="uis-apis" class="title-slide slide level1">
+<h1><span class="preserve-text">UIs &amp; APIs</span></h1>
+
+</section>
+<section id="minimal-user-interface" class="slide level2">
+<h2>Minimal User Interface</h2>
+<div class="kinda-small">
+<ul>
+<li class="fragment">This changes a lot depending on what the intended
+usecase is, so lets look at a few examples:
+<ul>
+<li class="fragment">Linux has the TTY, a kernel emulation of a
+<strong>T</strong>ele<strong>TY</strong>pe terminal.</li>
+<li class="fragment">Windows has a simple window manager and interface
+for launching command prompt sessions</li>
+<li class="fragment">MacOS… Well MacOS <em>does</em> have a TTY under
+all the GUI stuff, but if you ever reach the point that you see it your
+system is probably irrecoverably broken</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="os-level-apis" class="slide level2">
+<h2>OS-Level <span class="preserve-text">APIs</span></h2>
+<div class="kinda-small">
+<ul>
+<li class="fragment">Because system resources are shared and the kernel
+runs in a “privileged” context, programs can’t directly invoke kernel
+routines;</li>
+<li class="fragment">Instead, programs can make “system calls” (or
+syscalls).</li>
+<li class="fragment">When a program makes a system call, execution
+transfers to the kernel, which looks at the requested system call,
+checks if the program is authorized to perform that operating, and then
+performs the requested action or returns an error.</li>
+<li class="fragment">This is done either through a software interrupt or
+a dedicated processor instruction.</li>
+</ul>
+</div>
+</section></section>
+<section id="section-3" class="title-slide slide level1">
+<h1></h1>
+<pre><code>$ ./a.out
+Bad system call (core dumped)</code></pre>
+</section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
